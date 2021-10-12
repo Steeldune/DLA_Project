@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 
 
 class ParticleBrown:
-    def __init__(self, startCoords, endCoords, rand_len=512):
+    def __init__(self, startCoords, endCoords, rand_len=512, r=1):
         self.dim = len(startCoords)
         self.pos = np.random.uniform(startCoords, endCoords)
-        self.r = 1
+        self.r = r
         for i in range(self.dim):
             self.pos[i] = random.uniform(startCoords[i], endCoords[i])
         self.d = np.zeros(self.dim)
@@ -22,34 +22,25 @@ class ParticleBrown:
 
 
 class Brown2D(ParticleBrown):
-    def __init__(self, startCoords, endCoords):
-        super().__init__(startCoords, endCoords)
+    def __init__(self, startCoords, endCoords, rand_len=512, r=1):
+        super().__init__(startCoords, endCoords, rand_len, r)
         self.dim = 2
 
     def gen_rand(self):
         self.angle_array = np.random.uniform(0, 2 * np.pi, self.rand_int)
+        self.d = np.array([np.cos(self.angle_array)*self.r, np.sin(self.angle_array)*self.r])
 
-
-    def calc_v(self):
-        self.angle[0] = random.uniform(0, 2 * np.pi)
-        self.d[0] = np.cos(self.angle) * self.r
-        self.d[1] = np.sin(self.angle) * self.r
 
 
 class Brown3D(ParticleBrown):
-    def __init__(self, startCoords, endCoords):
-        super().__init__(startCoords, endCoords)
+    def __init__(self, startCoords, endCoords, rand_len=512, r=1):
+        super().__init__(startCoords, endCoords, rand_len, r)
         self.dim = 3
 
     def gen_rand(self):
         self.angle_array = np.random.uniform([0, 0], [2 * np.pi, np.pi], [2, self.rand_int])
+        self.d = np.array([self.r * np.sin(self.angle[1]) * np.cos(self.angle[0]),self.r * np.sin(self.angle[1]) * np.sin(self.angle[0]),self.r * np.cos(self.angle[1])])
 
-    def calc_v(self):
-        self.angle[0] = random.uniform(0, 2 * np.pi)
-        self.angle[1] = random.uniform(0, np.pi)
-        self.d[0] = self.r * np.sin(self.angle[1]) * np.cos(self.angle[0])
-        self.d[1] = self.r * np.sin(self.angle[1]) * np.sin(self.angle[0])
-        self.d[2] = self.r * np.cos(self.angle[1])
 
 
 class DLATRee:
@@ -71,8 +62,10 @@ if __name__ == '__main__':
     final_coords = np.array([10.0, 10.0])
     George = DLATRee([5.0, 5.0])
 
-    Jerry = ParticleBrown(origin, final_coords)
+    Jerry = Brown2D(origin, final_coords, rand_len=512)
     print(Jerry.pos)
+    Jerry.gen_rand()
+    print(len(Jerry.angle_array))
     print(George.start_coods)
 
     plt.scatter(Jerry.pos[0], Jerry.pos[1], s=40, c='Red', alpha=0.5)
