@@ -22,8 +22,8 @@ class ParticleBrown:
 
     def gen_path(self):
         path = np.cumsum(self.d, axis=1)
-        path[0] += self.pos[0]
-        path[1] += self.pos[1]
+        for i in range(self.dim):
+            path[i] += self.pos[i]
         return path
 
 
