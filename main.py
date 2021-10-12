@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 class ParticleBrown:
-    def __init__(self, startCoords, endCoords, rand_len=512, r=1):
+    def __init__(self, startCoords, endCoords, rand_len=512, r=1.0):
         self.dim = len(startCoords)
         self.pos = np.random.uniform(startCoords, endCoords)
         self.r = r
@@ -20,6 +20,12 @@ class ParticleBrown:
         self.rand_int = rand_len
         self.angle_array = np.array([self.dim - 1, self.rand_int])
 
+    def gen_path(self):
+        path = np.cumsum(self.d, axis=1)
+        path[0] += self.pos[0]
+        path[1] += self.pos[1]
+        return path
+
 
 class Brown2D(ParticleBrown):
     def __init__(self, startCoords, endCoords, rand_len=512, r=1):
@@ -28,8 +34,7 @@ class Brown2D(ParticleBrown):
 
     def gen_rand(self):
         self.angle_array = np.random.uniform(0, 2 * np.pi, self.rand_int)
-        self.d = np.array([np.cos(self.angle_array)*self.r, np.sin(self.angle_array)*self.r])
-
+        self.d = np.array([np.cos(self.angle_array) * self.r, np.sin(self.angle_array) * self.r])
 
 
 class Brown3D(ParticleBrown):
@@ -39,8 +44,8 @@ class Brown3D(ParticleBrown):
 
     def gen_rand(self):
         self.angle_array = np.random.uniform([0, 0], [2 * np.pi, np.pi], [2, self.rand_int])
-        self.d = np.array([self.r * np.sin(self.angle[1]) * np.cos(self.angle[0]),self.r * np.sin(self.angle[1]) * np.sin(self.angle[0]),self.r * np.cos(self.angle[1])])
-
+        self.d = np.array([self.r * np.sin(self.angle[1]) * np.cos(self.angle[0]),
+                           self.r * np.sin(self.angle[1]) * np.sin(self.angle[0]), self.r * np.cos(self.angle[1])])
 
 
 class DLATRee:
@@ -62,13 +67,14 @@ if __name__ == '__main__':
     final_coords = np.array([10.0, 10.0])
     George = DLATRee([5.0, 5.0])
 
-    Jerry = Brown2D(origin, final_coords, rand_len=512)
+    Jerry = Brown2D(origin, final_coords, rand_len=512, r=.3)
     print(Jerry.pos)
     Jerry.gen_rand()
     print(len(Jerry.angle_array))
     print(George.start_coods)
+    path = Jerry.gen_path()
 
-    plt.scatter(Jerry.pos[0], Jerry.pos[1], s=40, c='Red', alpha=0.5)
+    plt.scatter(path[0], path[1], s=40, c='Red', alpha=0.5)
     plt.scatter(George.start_coods[0], George.start_coods[1], s=40, c='Blue', alpha=0.75)
     plt.xlim(0, 10)
     plt.ylim(0, 10)
