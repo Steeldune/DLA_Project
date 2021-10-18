@@ -43,9 +43,11 @@ class Brown3D(ParticleBrown):
         self.dim = 3
 
     def gen_rand(self):
-        self.angle_array = np.random.uniform([0, 0], [2 * np.pi, np.pi], [2, self.rand_int])
-        self.d = np.array([self.r * np.sin(self.angle[1]) * np.cos(self.angle[0]),
-                           self.r * np.sin(self.angle[1]) * np.sin(self.angle[0]), self.r * np.cos(self.angle[1])])
+        self.angle_array = np.random.uniform(0, 2 * np.pi, (2, self.rand_int))
+        self.angle_array[1] *= 0.5
+        self.d = np.array([self.r * np.sin(self.angle_array[1]) * np.cos(self.angle_array[0]),
+                           self.r * np.sin(self.angle_array[1]) * np.sin(self.angle_array[0]),
+                           self.r * np.cos(self.angle_array[1])])
 
 
 class DLATRee:
@@ -67,7 +69,7 @@ if __name__ == '__main__':
     final_coords = np.array([10.0, 10.0])
     George = DLATRee([5.0, 5.0])
 
-    Jerry = Brown2D(origin, final_coords, rand_len=512, r=.3)
+    Jerry = Brown2D(origin, final_coords, rand_len=512, r=.1)
     print(Jerry.pos)
     Jerry.gen_rand()
     print(len(Jerry.angle_array))
