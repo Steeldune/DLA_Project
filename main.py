@@ -44,7 +44,7 @@ class Brown2D(ParticleBrown):
 
 
 class Brown3D(ParticleBrown):
-    def __init__(self, startCoords, endCoords, rand_len=512, r=1, spawn_r=0):
+    def __init__(self, startCoords, endCoords, rand_len=512, r=1, spawn_r=0.0):
         super().__init__(startCoords, endCoords, rand_len, r)
         self.dim = 3
         self.pos_theta = np.random.uniform(0, 2 * np.pi)
@@ -64,7 +64,7 @@ class Brown3D(ParticleBrown):
 
 class DLATree:
     def __init__(self, ini_coords, r=0.1):
-        self.seed_array = np.array([ini_coords])
+        self.seed_array = np.array(ini_coords)
         self.r = r
         self.link_tree = []
         self.connect_node = 0
@@ -101,6 +101,10 @@ class DLATree:
         for i in range(len(self.link_tree)):
             self.link_ax.scatter(self.link_tree[i][1], self.link_tree[i][0], color=colors)
 
+    def adjust_origin(self):
+        mean_temp = np.mean(self.seed_array, axis=0)
+        self.seed_array = np.subtract(self.seed_array, mean_temp)
+
 class DLA3DTree(DLATree):
     def __init__(self, ini_coords, r=0.1):
         super().__init__(ini_coords, r)
@@ -116,12 +120,25 @@ class DLA3DTree(DLATree):
 if __name__ == '__main__':
     origin = np.array([-5.0, -5.0, -5.0])
     final_coords = np.array([5.0, 5.0, 5.0])
-    George = DLA3DTree([0.0, 0.0, 0.0], r=0.2)
+    George = DLA3DTree([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]], r=0.2)
     spawn_r = 3
     max_dist = 0.0
 
-    for j in tqdm(range(300)):
-        Brownian_array = [Brown3D(origin, [10, 10, 0.00100], rand_len=512, r=.1, spawn_r=(max_dist + 1)) for i in
+    # Jerry = Brown3D(origin, [10., 10., 0.00100], rand_len=512, r=.3, spawn_r=(max_dist+1))
+    # Jerry.gen_rand()
+    # path = Jerry.gen_path()
+    # print(np.shape(path))
+    #
+    # fig = plt.figure()
+    # ax = fig.add_subplot(projection='3d')
+    #
+    # for i in range(512):
+    #     ax.scatter(path[0][i],path[1][i],path[2][i], s=30, alpha=1)
+    #
+    # plt.show()
+
+    for j in tqdm(range(30)):
+        Brownian_array = [Brown3D(origin, [10, 10, 0.00100], rand_len=512, r=.2, spawn_r=(max_dist + 1)) for i in
                           range(10)]
 
         for i in Brownian_array:
@@ -133,11 +150,10 @@ if __name__ == '__main__':
                 George.add_seed(i.path[:, indices])
                 seed_l = np.linalg.norm(i.path[:, indices])
                 max_dist = np.maximum(max_dist, np.linalg.norm(i.path[:, indices]))
+                George.adjust_origin()
 
     colors = iter(cm.rainbow(np.linspace(0, 1, len(George.seed_array))))
 
-    George.gen_tree_graph(colors)
-    George.gen_link_graph('black')
 
     # fig = plt.figure()
     # ax = fig.add_subplot(projection='3d')
@@ -153,10 +169,10 @@ if __name__ == '__main__':
     #     plt.scatter(George.seed_array[i][0], George.seed_array[i][1], s=30, color=next(colors), alpha=1)
     # plt.xlim(-5, 5)
     # plt.ylim(-5, 5)
-    print(George.link_tree)
 
     with open('coords.txt', 'w') as f:
-        f.write(str(np.shape(George.seed_array)[0]))
+        f.write(str(np.shape(George.seed_array)[0]) + '\n')
+        f.write(str(np.shape(George.link_tree)[0]))
         f.write('\n')
         for coord in George.seed_array:
             f.write(str(coord))
@@ -164,5 +180,3 @@ if __name__ == '__main__':
         for link in George.link_tree:
             f.write(str(link))
             f.write('\n')
-
-    plt.show()

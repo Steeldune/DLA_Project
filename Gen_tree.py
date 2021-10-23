@@ -35,18 +35,28 @@ if f.exists():
 
 data_split = data.split('\n')
 data_len = int(data_split[0])
+tree_len = int(data_split[1])
 print(data_len)
+print(tree_len)
 
 particle_coords = np.zeros((data_len, 3), dtype=float)
-tree_links = np.zeros((data_len-1, 2), dtype=int)
+tree_links = np.zeros((tree_len, 2), dtype=int)
 
-for i in range(1, data_len+1):
+for i in range(2, data_len+2):
     temp = data_split[i][1: -1]
-    particle_coords[i-1] = np.fromstring(temp, dtype=float, count=3, sep=' ')
+    particle_coords[i-2] = np.fromstring(temp, dtype=float, count=3, sep=' ')
 
-for j in range(data_len+1, data_len+data_len):
+print('Done with getting particles')
+
+for j in range(data_len+2, data_len+tree_len+2):
     temp_tree = data_split[j][1: -1]
-    tree_links[j-data_len-1] = np.fromstring(temp_tree, dtype=int, count=2, sep=', ')
+    print(temp_tree)
+    tree_links[j-data_len-2] = np.fromstring(temp_tree, dtype=int, count=2, sep=', ')
+    
+print('Done with getting links')
+print(tree_links)
 
 for i, link in enumerate(tree_links):
     gen_branch(0.05, 0.025, particle_coords[link[0]], particle_coords[link[1]])
+    if i%100 ==0:
+        print('Generating branch {}'.format(i))
