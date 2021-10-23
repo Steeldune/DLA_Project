@@ -155,6 +155,14 @@ if __name__ == '__main__':
     # plt.ylim(-5, 5)
     print(George.link_tree)
 
-
+    with open('coords.txt', 'w') as f:
+        f.write(str(np.shape(George.seed_array)[0]))
+        f.write('\n')
+        for coord in George.seed_array:
+            f.write(str(coord))
+            f.write('\n')
+        for link in George.link_tree:
+            f.write(str(link))
+            f.write('\n')
 
     plt.show()
