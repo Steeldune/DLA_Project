@@ -48,7 +48,6 @@ class Brown2D(ParticleBrown):
         self.pos[1] = np.sin(self.pos_theta) * spawn_r
 
 
-
 class Brown3D(ParticleBrown):
     def __init__(self, startCoords, endCoords, rand_len=512, r=1):
         super().__init__(startCoords, endCoords, rand_len, r)
@@ -58,17 +57,15 @@ class Brown3D(ParticleBrown):
 
     def start_pos_sphere(self, spawn_r=0.0):
         self.pos_theta = np.random.uniform(0, 2 * np.pi)
-        self.pos_phi = np.random.uniform(0, np.pi)
+        self.pos_phi = np.arccos(np.random.uniform(-1, 1))
 
         self.pos[0] = spawn_r * np.sin(self.pos_phi) * np.cos(self.pos_theta)
         self.pos[1] = spawn_r * np.sin(self.pos_phi) * np.sin(self.pos_theta)
         self.pos[2] = spawn_r + np.cos(self.pos_phi)
 
-
-
     def gen_rand(self):
-        self.angle_array = np.random.uniform(0, 2 * np.pi, (2, self.rand_int))
-        self.angle_array[1] *= 0.5
+        self.angle_array[0] = np.random.uniform(0, 2 * np.pi)
+        self.angle_array[1] = np.arccos(np.random.uniform(-1, 1))
         self.d = np.array([self.r * np.sin(self.angle_array[1]) * np.cos(self.angle_array[0]),
                            self.r * np.sin(self.angle_array[1]) * np.sin(self.angle_array[0]),
                            self.r * np.cos(self.angle_array[1])])
@@ -82,7 +79,6 @@ class DLATree:
         self.connect_node = 0
         self.link_fig = plt.figure()
         self.link_ax = self.link_fig.add_subplot()
-
 
     def check_path(self, path):
         check_indices = -1
